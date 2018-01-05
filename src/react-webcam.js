@@ -82,11 +82,22 @@ export default class Webcam extends Component {
     }
   }
 
-  getScreenshot() {
+  getScreenshot(type = 'blob') {
     if (!this.state.hasUserMedia) return null;
 
     const canvas = this.getCanvas();
-    return canvas && canvas.toDataURL(this.props.screenshotFormat);
+    return new Promise((resolve, reject) => {
+      if (type === 'blob') {
+        if (!canvas) {
+          reject(canvas);
+        }
+        canvas.toBlob((blob) => {
+          resolve(blob);
+        });
+      } else {
+        resolve(canvas && canvas.toDataURL(this.props.screenshotFormat));
+      }
+    });
   }
 
   getCanvas() {
